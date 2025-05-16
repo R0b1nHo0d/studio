@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import type { TrafficLog, FilterRule, AiAnalysisReport } from "@/types";
@@ -155,7 +155,6 @@ export default function DashboardPage() {
           <Card className="lg:col-span-1 flex flex-col">
             <CardHeader>
               <CardTitle>Capture & Filters</CardTitle>
-              <CardDescription>Control traffic capture and define filtering rules.</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow space-y-6">
               <div className="space-y-2">
@@ -205,7 +204,6 @@ export default function DashboardPage() {
           <Card className="lg:col-span-2 flex flex-col">
             <CardHeader>
               <CardTitle>AI-Powered Analysis</CardTitle>
-              <CardDescription>Upload captured traffic data logs for GenAI analysis.</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow space-y-4">
               <div className="space-y-2">
@@ -240,9 +238,6 @@ export default function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Captured Outbound Traffic Logs</CardTitle>
-            <CardDescription>
-              Displaying {trafficLogs.length === 0 ? "initial client-side" : (isCapturing ? "live" : "last captured")} outbound network traffic. Filtered by active rules.
-            </CardDescription>
           </CardHeader>
           <CardContent>
             <TrafficDataTable data={trafficLogs} activeFilters={activeFilters.filter(f => f.isEnabled)} />
