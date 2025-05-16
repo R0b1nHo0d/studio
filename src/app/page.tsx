@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +16,8 @@ import { PlayCircle, StopCircle, Package, DatabaseZap, Filter as FilterIcon, Shi
 import { Badge } from "@/components/ui/badge";
 import { SidebarInset } from "@/components/ui/sidebar";
 
-const initialMockTraffic: TrafficLog[] = [
+// Function to generate initial mock traffic, to be called on the client-side
+const getClientSideInitialMockTraffic = (): TrafficLog[] => [
   { id: "1", timestamp: new Date(Date.now() - 10000).toISOString(), sourceIp: "192.168.1.101", destinationIp: "104.18.30.106", destinationPort: 443, protocol: "TCP", size: 1500, packetSummary: "HTTPS traffic to example.com" },
   { id: "2", timestamp: new Date(Date.now() - 8000).toISOString(), sourceIp: "192.168.1.101", destinationIp: "8.8.8.8", destinationPort: 53, protocol: "UDP", size: 120, packetSummary: "DNS query to Google DNS" },
   { id: "3", timestamp: new Date(Date.now() - 5000).toISOString(), sourceIp: "192.168.1.105", destinationIp: "172.217.160.142", destinationPort: 80, protocol: "TCP", size: 850, packetSummary: "HTTP traffic to google.com" },
@@ -27,18 +28,35 @@ const initialMockTraffic: TrafficLog[] = [
 export default function DashboardPage() {
   const { toast } = useToast();
   const [isCapturing, setIsCapturing] = useState(false);
-  const [trafficLogs, setTrafficLogs] = useState<TrafficLog[]>(initialMockTraffic);
+  // Initialize with an empty array to prevent hydration mismatch
+  const [trafficLogs, setTrafficLogs] = useState<TrafficLog[]>([]);
+  const clientInitialMockTrafficRef = useRef<TrafficLog[] | null>(null);
   const [activeFilters, setActiveFilters] = useState<FilterRule[]>([]);
   const [aiTrafficInput, setAiTrafficInput] = useState("");
   const [aiAnalysisResult, setAiAnalysisResult] = useState<AiAnalysisReport | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
 
+  // Effect to set initial mock data on the client side
+  useEffect(() => {
+    const generatedMockData = getClientSideInitialMockTraffic();
+    clientInitialMockTrafficRef.current = generatedMockData;
+    // Only set trafficLogs if not capturing.
+    // If isCapturing were true on mount (e.g. persisted state), the other effect would handle it.
+    if (!isCapturing) {
+        setTrafficLogs(generatedMockData);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array: runs once on mount on the client
+
+
   // Simulate live traffic capture
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
+    const initialMockData = clientInitialMockTrafficRef.current;
+
     if (isCapturing) {
-      setTrafficLogs(initialMockTraffic.slice(0,2)); // Reset to a few initial logs when starting
+      setTrafficLogs(initialMockData ? initialMockData.slice(0, 2) : []); 
       intervalId = setInterval(() => {
         const newLog: TrafficLog = {
           id: crypto.randomUUID(),
@@ -50,15 +68,23 @@ export default function DashboardPage() {
           size: Math.floor(Math.random() * 1400) + 60,
           packetSummary: "Generated mock traffic log entry",
         };
-        setTrafficLogs((prevLogs) => [newLog, ...prevLogs].slice(0, 50)); // Keep max 50 logs
+        setTrafficLogs((prevLogs) => [newLog, ...prevLogs].slice(0, 50)); 
       }, 3000);
     } else {
-       if (trafficLogs.length !== initialMockTraffic.length || trafficLogs[0]?.id !== initialMockTraffic[0]?.id) {
-         setTrafficLogs(initialMockTraffic); // Reset to full initial mock data when stopped
-       }
+      // When stopping capture, reset to the full client-side generated initial mock data
+      if (initialMockData) {
+        // Only update if it's different to avoid unnecessary re-renders
+        const currentLogsAreDifferent = trafficLogs.length !== initialMockData.length ||
+                                       (trafficLogs.length > 0 && initialMockData.length > 0 && trafficLogs[0]?.id !== initialMockData[0]?.id) ||
+                                       (trafficLogs.length === 0 && initialMockData.length > 0);
+        if (currentLogsAreDifferent) {
+           setTrafficLogs(initialMockData);
+        }
+      }
     }
     return () => clearInterval(intervalId);
-  }, [isCapturing]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCapturing]); // Effect should only re-run when isCapturing changes
 
 
   const handleAddFilter = (filter: FilterRule) => {
@@ -186,7 +212,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Captured Outbound Traffic Logs</CardTitle>
             <CardDescription>
-              Displaying {isCapturing ? "live" : "last captured"} outbound network traffic. Filtered by active rules.
+              Displaying {trafficLogs.length === 0 ? "initial client-side" : (isCapturing ? "live" : "last captured")} outbound network traffic. Filtered by active rules.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -197,3 +223,5 @@ export default function DashboardPage() {
     </SidebarInset>
   );
 }
+
+    
