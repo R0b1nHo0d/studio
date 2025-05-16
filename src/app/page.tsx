@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type { AiAnalysisReport } from "@/types";
 import { analyzeTrafficDataAction } from "./actions";
@@ -15,6 +17,7 @@ import { SidebarInset } from "@/components/ui/sidebar";
 export default function DashboardPage() {
   const { toast } = useToast();
   const [aiTrafficInput, setAiTrafficInput] = useState("");
+  const [whitelistedDomainsInput, setWhitelistedDomainsInput] = useState("");
   const [aiAnalysisResult, setAiAnalysisResult] = useState<AiAnalysisReport | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
@@ -50,7 +53,10 @@ export default function DashboardPage() {
     setAnalysisError(null);
     setAiAnalysisResult(null);
     try {
-      const result = await analyzeTrafficDataAction({ trafficData: aiTrafficInput });
+      const result = await analyzeTrafficDataAction({ 
+        trafficData: aiTrafficInput,
+        whitelistedDomains: whitelistedDomainsInput.trim() || undefined, // Send undefined if empty
+      });
       setAiAnalysisResult(result);
       toast({ title: "Analysis Complete", description: "Traffic data analyzed successfully." });
     } catch (error) {
@@ -69,32 +75,51 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>AI-Powered Analysis</CardTitle>
           </CardHeader>
-          <CardContent className="flex-grow space-y-4">
+          <CardContent className="flex-grow space-y-6 p-6">
             <div className="space-y-2">
-              <label htmlFor="traffic-file-upload" className="block text-sm font-medium text-foreground">
+              <Label htmlFor="traffic-file-upload" className="block text-sm font-medium text-foreground">
                 Upload Traffic Data File
-              </label>
+              </Label>
               <div className="flex items-center space-x-2">
-                  <Input
+                <Input
                   id="traffic-file-upload"
                   type="file"
                   onChange={handleFileChange}
-                  accept=".txt,.log,.csv,.json" // Specify acceptable file types
+                  accept=".txt,.log,.csv,.json" 
                   className="w-full cursor-pointer border-input"
                   data-ai-hint="upload logs"
-                  />
-                  <UploadCloud className="h-5 w-5 text-muted-foreground" />
+                />
+                <UploadCloud className="h-5 w-5 text-muted-foreground" />
               </div>
               {fileName && <p className="text-xs text-muted-foreground">Selected file: {fileName}</p>}
               <p className="text-xs text-muted-foreground">
-                Upload traffic data (e.g., CSV, TXT, JSON, or LOG format). The AI expects text-based input. <br/>
+                Upload traffic data (e.g., CSV, TXT, JSON, or LOG format). The AI expects text-based input. <br />
                 For PCAP files, please convert them to a text format (e.g., using tshark or tcpdump) before uploading.
               </p>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="whitelisted-domains-input" className="block text-sm font-medium text-foreground">
+                Whitelisted Domains (Optional)
+              </Label>
+              <Textarea
+                id="whitelisted-domains-input"
+                placeholder="Enter comma-separated domains, e.g., google.com, mycompany.com, api.service.com"
+                value={whitelistedDomainsInput}
+                onChange={(e) => setWhitelistedDomainsInput(e.target.value)}
+                className="min-h-[60px]"
+                data-ai-hint="whitelist domains"
+              />
+              <p className="text-xs text-muted-foreground">
+                Provide a list of domains you trust. The AI will categorize connections based on this list.
+              </p>
+            </div>
+
             <Button onClick={handleAnalyzeTraffic} disabled={isAnalyzing || !aiTrafficInput.trim()} className="w-full">
               {isAnalyzing ? "Analyzing..." : "Analyze Uploaded Data"}
             </Button>
-            <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError}/>
+            
+            <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError} />
           </CardContent>
         </Card>
       </main>

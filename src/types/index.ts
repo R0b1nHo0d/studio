@@ -23,6 +23,7 @@ export interface AiAnalysisReport {
   potentialThreats: string;
   anomalies: string;
   outboundSrcToRemote: string;
+  connectionsToWhitelistedDomains: string;
+  connectionsToNonWhitelistedDomains: string;
   recommendations: string;
 }
-
