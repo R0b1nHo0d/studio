@@ -1,7 +1,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, CheckCircle, Info, ListChecks, ArrowUpRight, ListX, ShieldCheck, ShieldAlert } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, ListChecks, ArrowUpRight, ShieldCheck, ShieldAlert } from "lucide-react";
 import type { AiAnalysisReport } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface AnalysisReportProps {
   report: AiAnalysisReport | null;
@@ -26,7 +27,7 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
 
   if (error) {
     return (
-       <Card className="border-destructive">
+       <Card className="border-destructive bg-destructive/10">
         <CardHeader>
           <CardTitle className="flex items-center text-destructive">
             <AlertTriangle className="mr-2 h-5 w-5" />
@@ -34,7 +35,7 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-destructive-foreground bg-destructive/20 p-3 rounded-md">{error}</p>
+          <p className="text-sm text-destructive font-medium">{error}</p>
         </CardContent>
       </Card>
     )
@@ -55,6 +56,14 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
     );
   }
 
+  const monospaceSections = [
+    "Potential Threats",
+    "Anomalies Detected",
+    "OUTbound Traffic (Source to Remote)",
+    "Connections to Whitelisted Domains",
+    "Connections to Non-Whitelisted/Unknown Domains"
+  ];
+
   return (
     <div className="space-y-4">
       <Card>
@@ -69,22 +78,22 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
             <p className="text-sm whitespace-pre-wrap">{report.summary}</p>
           </ReportSection>
           <ReportSection title="Potential Threats" icon={<AlertTriangle className="h-5 w-5 text-destructive" />}>
-            <p className="text-sm whitespace-pre-wrap">{report.potentialThreats}</p>
+            <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("Potential Threats") && "font-mono")}>{report.potentialThreats}</p>
           </ReportSection>
           <ReportSection title="Anomalies Detected" icon={<AlertTriangle className="h-5 w-5 text-accent" />}>
-            <p className="text-sm whitespace-pre-wrap">{report.anomalies}</p>
+            <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("Anomalies Detected") && "font-mono")}>{report.anomalies}</p>
           </ReportSection>
           <ReportSection title="OUTbound Traffic (Source to Remote)" icon={<ArrowUpRight className="h-5 w-5 text-blue-500" />}>
-            <p className="text-sm whitespace-pre-wrap">{report.outboundSrcToRemote}</p>
+            <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("OUTbound Traffic (Source to Remote)") && "font-mono")}>{report.outboundSrcToRemote}</p>
           </ReportSection>
           {report.connectionsToWhitelistedDomains && (
             <ReportSection title="Connections to Whitelisted Domains" icon={<ShieldCheck className="h-5 w-5 text-green-600" />}>
-              <p className="text-sm whitespace-pre-wrap">{report.connectionsToWhitelistedDomains}</p>
+              <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("Connections to Whitelisted Domains") && "font-mono")}>{report.connectionsToWhitelistedDomains}</p>
             </ReportSection>
           )}
           {report.connectionsToNonWhitelistedDomains && (
             <ReportSection title="Connections to Non-Whitelisted/Unknown Domains" icon={<ShieldAlert className="h-5 w-5 text-orange-500" />}>
-              <p className="text-sm whitespace-pre-wrap">{report.connectionsToNonWhitelistedDomains}</p>
+              <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("Connections to Non-Whitelisted/Unknown Domains") && "font-mono")}>{report.connectionsToNonWhitelistedDomains}</p>
             </ReportSection>
           )}
           <ReportSection title="Recommendations" icon={<ListChecks className="h-5 w-5 text-green-600" />}>
@@ -113,3 +122,4 @@ function ReportSection({ title, icon, children }: ReportSectionProps) {
     </div>
   );
 }
+
