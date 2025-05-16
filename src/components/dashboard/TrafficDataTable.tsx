@@ -178,6 +178,15 @@ export function TrafficDataTable({ data, activeFilters }: TrafficDataTableProps)
     { key: "packetSummary", header: "Summary" },
   ];
 
+  const selectAllCheckboxState: boolean | 'indeterminate' = useMemo(() => {
+    const numSelected = selectedRows.size;
+    const numRows = sortedData.length;
+    if (numRows === 0) return false;
+    if (numSelected === 0) return false;
+    if (numSelected === numRows) return true;
+    return 'indeterminate';
+  }, [selectedRows, sortedData]);
+
 
   return (
     <div className="space-y-4">
@@ -215,9 +224,9 @@ export function TrafficDataTable({ data, activeFilters }: TrafficDataTableProps)
             <TableRow>
               <TableHead padding="checkbox">
                 <Checkbox
-                  checked={selectedRows.size > 0 && selectedRows.size === sortedData.length}
-                  indeterminate={selectedRows.size > 0 && selectedRows.size < sortedData.length}
+                  checked={selectAllCheckboxState}
                   onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                  aria-label="Select all rows"
                 />
               </TableHead>
               {columnDefs.filter(col => visibleColumns[col.key]).map(col => (
@@ -238,6 +247,7 @@ export function TrafficDataTable({ data, activeFilters }: TrafficDataTableProps)
                     <Checkbox
                         checked={selectedRows.has(log.id)}
                         onCheckedChange={(checked) => handleSelectRow(log.id, !!checked)}
+                        aria-label={`Select row ${log.id}`}
                     />
                   </TableCell>
                   {columnDefs.filter(col => visibleColumns[col.key]).map(column => (
@@ -273,3 +283,4 @@ export function TrafficDataTable({ data, activeFilters }: TrafficDataTableProps)
     </div>
   );
 }
+
