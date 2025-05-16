@@ -65,7 +65,7 @@ export default function DashboardPage() {
   return (
     <SidebarInset>
       <main className="flex flex-1 flex-col">
-        <Card className="flex flex-1 flex-col m-2 shadow-lg rounded-lg">
+        <Card className="flex flex-1 flex-col shadow-lg rounded-lg">
           <CardHeader>
             <CardTitle>AI-Powered Analysis</CardTitle>
           </CardHeader>
