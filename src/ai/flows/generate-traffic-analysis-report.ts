@@ -1,3 +1,4 @@
+
 // Use server directive is required when using Genkit flows in Next.js
 'use server';
 
@@ -29,6 +30,7 @@ const TrafficAnalysisReportOutputSchema = z.object({
     .string()
     .describe('An analysis of potential security threats identified in the traffic.'),
   anomalies: z.string().describe('Identified anomalies or unusual patterns in the traffic.'),
+  outboundSrcToRemote: z.string().describe('A summary of notable outbound traffic connections from local source IPs to remote destination IPs, including protocols and common ports if identifiable.'),
   recommendations: z
     .string()
     .describe('Recommendations for improving network security based on the analysis.'),
@@ -45,7 +47,7 @@ const prompt = ai.definePrompt({
   name: 'trafficAnalysisReportPrompt',
   input: {schema: TrafficAnalysisReportInputSchema},
   output: {schema: TrafficAnalysisReportOutputSchema},
-  prompt: `You are an expert network security analyst. Analyze the provided network traffic data and generate a report that includes a summary, potential threats, anomalies, and recommendations.
+  prompt: `You are an expert network security analyst. Analyze the provided network traffic data and generate a report that includes a summary, potential threats, anomalies, outbound traffic details, and recommendations.
 
 Traffic Data:
 {{trafficData}}
@@ -61,6 +63,7 @@ Report:
 Summary: Briefly describe the overall network traffic patterns.
 Potential Threats: Identify any potential security threats present in the traffic data and describe them in detail.
 Anomalies: Highlight any unusual or anomalous patterns observed in the traffic.
+Outbound Traffic (Source to Remote): Detail significant outbound connections observed from local sources to remote destinations. For each connection, mention the source IP, destination IP, protocol, and any common service ports if identifiable.
 Recommendations: Provide actionable recommendations to improve network security based on the analysis.`,
 });
 
@@ -75,3 +78,4 @@ const generateTrafficAnalysisReportFlow = ai.defineFlow(
     return output!;
   }
 );
+

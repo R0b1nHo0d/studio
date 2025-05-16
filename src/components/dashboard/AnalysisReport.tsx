@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, CheckCircle, Info, ListChecks } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, ListChecks, ArrowUpRight } from "lucide-react";
 import type { AiAnalysisReport } from "@/types";
 
 interface AnalysisReportProps {
@@ -74,6 +74,9 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
           <ReportSection title="Anomalies Detected" icon={<AlertTriangle className="h-5 w-5 text-accent" />}>
             <p className="text-sm whitespace-pre-wrap">{report.anomalies}</p>
           </ReportSection>
+          <ReportSection title="OUTbound Traffic (Source to Remote)" icon={<ArrowUpRight className="h-5 w-5 text-blue-500" />}>
+            <p className="text-sm whitespace-pre-wrap">{report.outboundSrcToRemote}</p>
+          </ReportSection>
           <ReportSection title="Recommendations" icon={<ListChecks className="h-5 w-5 text-green-600" />}>
             <p className="text-sm whitespace-pre-wrap">{report.recommendations}</p>
           </ReportSection>
@@ -100,3 +103,4 @@ function ReportSection({ title, icon, children }: ReportSectionProps) {
     </div>
   );
 }
+

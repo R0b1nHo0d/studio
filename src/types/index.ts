@@ -22,5 +22,7 @@ export interface AiAnalysisReport {
   summary: string;
   potentialThreats: string;
   anomalies: string;
+  outboundSrcToRemote: string;
   recommendations: string;
 }
+
