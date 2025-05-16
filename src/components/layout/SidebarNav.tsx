@@ -33,7 +33,7 @@ export function SidebarNav() {
         <SidebarHeader className="flex items-center justify-between p-3">
             <div className={`flex items-center gap-2 ${state === 'collapsed' && !isMobile ? 'hidden' : ''}`}>
               <Network className="h-6 w-6 text-sidebar-primary" />
-              <span className="font-semibold text-lg text-sidebar-foreground">Outbound Analyzer</span>
+              <span className="font-semibold text-lg text-sidebar-foreground">OUTbound</span>
             </div>
             {(!isMobile && open) && (
               <Button variant="ghost" size="icon" className="text-sidebar-foreground hover:bg-sidebar-accent" onClick={toggleSidebar}>
@@ -60,7 +60,7 @@ export function SidebarNav() {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter className={`${state === 'collapsed' && !isMobile ? 'hidden' : ''} p-3`}>
-          <p className="text-xs text-sidebar-foreground/70">© 2024 Outbound Analyzer</p>
+          <p className="text-xs text-sidebar-foreground/70">© 2024 OUTbound</p>
         </SidebarFooter>
       </Sidebar>
        {/* The main content area, wrapped by SidebarInset */}
@@ -91,4 +91,3 @@ export function SettingsPagePlaceholder() {
     </SidebarInset>
   );
 }
-

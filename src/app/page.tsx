@@ -64,42 +64,39 @@ export default function DashboardPage() {
 
   return (
     <SidebarInset>
-      <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-        
-        <div className="grid grid-cols-1 gap-6">
-          <Card className="lg:col-span-1 flex flex-col">
-            <CardHeader>
-              <CardTitle>AI-Powered Analysis</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-grow space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="traffic-file-upload" className="block text-sm font-medium text-foreground">
-                  Upload Traffic Data File
-                </label>
-                <div className="flex items-center space-x-2">
-                    <Input
-                    id="traffic-file-upload"
-                    type="file"
-                    onChange={handleFileChange}
-                    accept=".txt,.log,.csv,.json" // Specify acceptable file types
-                    className="w-full cursor-pointer border-input"
-                    data-ai-hint="upload logs"
-                    />
-                    <UploadCloud className="h-5 w-5 text-muted-foreground" />
-                </div>
-                {fileName && <p className="text-xs text-muted-foreground">Selected file: {fileName}</p>}
-                <p className="text-xs text-muted-foreground">
-                  Upload traffic data (e.g., CSV, TXT, JSON, or LOG format). The AI expects text-based input. <br/>
-                  For PCAP files, please convert them to a text format (e.g., using tshark or tcpdump) before uploading.
-                </p>
+      <main className="flex flex-1 flex-col">
+        <Card className="flex flex-1 flex-col m-2 shadow-lg rounded-lg">
+          <CardHeader>
+            <CardTitle>AI-Powered Analysis</CardTitle>
+          </CardHeader>
+          <CardContent className="flex-grow space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="traffic-file-upload" className="block text-sm font-medium text-foreground">
+                Upload Traffic Data File
+              </label>
+              <div className="flex items-center space-x-2">
+                  <Input
+                  id="traffic-file-upload"
+                  type="file"
+                  onChange={handleFileChange}
+                  accept=".txt,.log,.csv,.json" // Specify acceptable file types
+                  className="w-full cursor-pointer border-input"
+                  data-ai-hint="upload logs"
+                  />
+                  <UploadCloud className="h-5 w-5 text-muted-foreground" />
               </div>
-              <Button onClick={handleAnalyzeTraffic} disabled={isAnalyzing || !aiTrafficInput.trim()} className="w-full">
-                {isAnalyzing ? "Analyzing..." : "Analyze Uploaded Data"}
-              </Button>
-              <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError}/>
-            </CardContent>
-          </Card>
-        </div>
+              {fileName && <p className="text-xs text-muted-foreground">Selected file: {fileName}</p>}
+              <p className="text-xs text-muted-foreground">
+                Upload traffic data (e.g., CSV, TXT, JSON, or LOG format). The AI expects text-based input. <br/>
+                For PCAP files, please convert them to a text format (e.g., using tshark or tcpdump) before uploading.
+              </p>
+            </div>
+            <Button onClick={handleAnalyzeTraffic} disabled={isAnalyzing || !aiTrafficInput.trim()} className="w-full">
+              {isAnalyzing ? "Analyzing..." : "Analyze Uploaded Data"}
+            </Button>
+            <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError}/>
+          </CardContent>
+        </Card>
       </main>
     </SidebarInset>
   );

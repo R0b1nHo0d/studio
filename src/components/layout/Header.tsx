@@ -19,7 +19,7 @@ export function Header() {
       ) : null}
        <div className="flex items-center gap-2">
          <Network className="h-6 w-6 text-primary" />
-         <h1 className="text-xl font-semibold tracking-tight">Outbound Analyzer</h1>
+         <h1 className="text-xl font-semibold tracking-tight">OUTbound</h1>
        </div>
       {/* Add other header elements like user profile, settings dropdown here if needed */}
     </header>

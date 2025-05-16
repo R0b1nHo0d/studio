@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Outbound Analyzer',
+  title: 'OUTbound',
   description: 'Analyze outbound network traffic, identify patterns, anomalies, and potential security threats.',
 };
 
