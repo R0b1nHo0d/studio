@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input"; // Changed from Textarea
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import type { TrafficLog, FilterRule, AiAnalysisReport } from "@/types";
 import { analyzeTrafficDataAction } from "./actions";
@@ -44,7 +44,7 @@ export default function DashboardPage() {
         setTrafficLogs(generatedMockData);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
+  }, []);
 
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function DashboardPage() {
     const initialMockData = clientInitialMockTrafficRef.current;
 
     if (isCapturing) {
-      setTrafficLogs(initialMockData ? initialMockData.slice(0, 2) : []); 
+      setTrafficLogs(initialMockData ? initialMockData.slice(0, 2) : []);
       intervalId = setInterval(() => {
         const newLog: TrafficLog = {
           id: crypto.randomUUID(),
@@ -64,7 +64,7 @@ export default function DashboardPage() {
           size: Math.floor(Math.random() * 1400) + 60,
           packetSummary: "Generated mock traffic log entry",
         };
-        setTrafficLogs((prevLogs) => [newLog, ...prevLogs].slice(0, 50)); 
+        setTrafficLogs((prevLogs) => [newLog, ...prevLogs].slice(0, 50));
       }, 3000);
     } else {
       if (initialMockData) {
@@ -78,7 +78,7 @@ export default function DashboardPage() {
     }
     return () => clearInterval(intervalId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCapturing]); 
+  }, [isCapturing]);
 
 
   const handleAddFilter = (filter: FilterRule) => {
@@ -136,7 +136,7 @@ export default function DashboardPage() {
       setIsAnalyzing(false);
     }
   };
-  
+
   const totalPackets = trafficLogs.length;
   const dataTransferredMB = (trafficLogs.reduce((acc, log) => acc + log.size, 0) / (1024 * 1024)).toFixed(2);
 
@@ -217,7 +217,7 @@ export default function DashboardPage() {
                     id="traffic-file-upload"
                     type="file"
                     onChange={handleFileChange}
-                    accept=".txt,.log,.csv,.json" 
+                    accept=".txt,.log,.csv,.json"
                     className="w-full cursor-pointer border-input"
                     data-ai-hint="upload logs"
                     />
