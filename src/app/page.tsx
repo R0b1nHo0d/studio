@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input"; // Changed from Textarea
 import { useToast } from "@/hooks/use-toast";
 import type { TrafficLog, FilterRule, AiAnalysisReport } from "@/types";
 import { analyzeTrafficDataAction } from "./actions";
@@ -12,7 +12,7 @@ import { FilterForm } from "@/components/dashboard/FilterForm";
 import { TrafficDataTable } from "@/components/dashboard/TrafficDataTable";
 import { AnalysisReport } from "@/components/dashboard/AnalysisReport";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { PlayCircle, StopCircle, Package, DatabaseZap, Filter as FilterIcon, ShieldAlert, Trash2, ToggleRight, ToggleLeft } from "lucide-react";
+import { PlayCircle, StopCircle, Package, DatabaseZap, Filter as FilterIcon, ShieldAlert, Trash2, ToggleRight, ToggleLeft, UploadCloud } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { SidebarInset } from "@/components/ui/sidebar";
 
@@ -28,7 +28,6 @@ const getClientSideInitialMockTraffic = (): TrafficLog[] => [
 export default function DashboardPage() {
   const { toast } = useToast();
   const [isCapturing, setIsCapturing] = useState(false);
-  // Initialize with an empty array to prevent hydration mismatch
   const [trafficLogs, setTrafficLogs] = useState<TrafficLog[]>([]);
   const clientInitialMockTrafficRef = useRef<TrafficLog[] | null>(null);
   const [activeFilters, setActiveFilters] = useState<FilterRule[]>([]);
@@ -36,21 +35,18 @@ export default function DashboardPage() {
   const [aiAnalysisResult, setAiAnalysisResult] = useState<AiAnalysisReport | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
 
-  // Effect to set initial mock data on the client side
   useEffect(() => {
     const generatedMockData = getClientSideInitialMockTraffic();
     clientInitialMockTrafficRef.current = generatedMockData;
-    // Only set trafficLogs if not capturing.
-    // If isCapturing were true on mount (e.g. persisted state), the other effect would handle it.
     if (!isCapturing) {
         setTrafficLogs(generatedMockData);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array: runs once on mount on the client
+  }, []); 
 
 
-  // Simulate live traffic capture
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
     const initialMockData = clientInitialMockTrafficRef.current;
@@ -71,9 +67,7 @@ export default function DashboardPage() {
         setTrafficLogs((prevLogs) => [newLog, ...prevLogs].slice(0, 50)); 
       }, 3000);
     } else {
-      // When stopping capture, reset to the full client-side generated initial mock data
       if (initialMockData) {
-        // Only update if it's different to avoid unnecessary re-renders
         const currentLogsAreDifferent = trafficLogs.length !== initialMockData.length ||
                                        (trafficLogs.length > 0 && initialMockData.length > 0 && trafficLogs[0]?.id !== initialMockData[0]?.id) ||
                                        (trafficLogs.length === 0 && initialMockData.length > 0);
@@ -84,7 +78,7 @@ export default function DashboardPage() {
     }
     return () => clearInterval(intervalId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCapturing]); // Effect should only re-run when isCapturing changes
+  }, [isCapturing]); 
 
 
   const handleAddFilter = (filter: FilterRule) => {
@@ -101,9 +95,30 @@ export default function DashboardPage() {
      toast({ title: "Filter Removed", variant: "destructive" });
   };
 
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        setAiTrafficInput(text);
+      };
+      reader.onerror = () => {
+        toast({ title: "File Error", description: "Could not read the file.", variant: "destructive" });
+        setFileName(null);
+        setAiTrafficInput("");
+      };
+      reader.readAsText(file);
+    } else {
+      setFileName(null);
+      setAiTrafficInput("");
+    }
+  };
+
   const handleAnalyzeTraffic = async () => {
     if (!aiTrafficInput.trim()) {
-      toast({ title: "Input Required", description: "Please paste traffic data for analysis.", variant: "destructive" });
+      toast({ title: "No Data for Analysis", description: "Please upload a traffic data file.", variant: "destructive" });
       return;
     }
     setIsAnalyzing(true);
@@ -190,18 +205,32 @@ export default function DashboardPage() {
           <Card className="lg:col-span-2 flex flex-col">
             <CardHeader>
               <CardTitle>AI-Powered Analysis</CardTitle>
-              <CardDescription>Analyze captured traffic data using GenAI to identify patterns and threats.</CardDescription>
+              <CardDescription>Upload captured traffic data logs for GenAI analysis.</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow space-y-4">
-              <Textarea
-                placeholder="Paste traffic data here for analysis (e.g., CSV or log format). Ensure data focuses on outbound traffic details like destination IPs, ports, protocols, and data size."
-                value={aiTrafficInput}
-                onChange={(e) => setAiTrafficInput(e.target.value)}
-                className="min-h-[150px] font-mono text-xs"
-                data-ai-hint="network logs"
-              />
+              <div className="space-y-2">
+                <label htmlFor="traffic-file-upload" className="block text-sm font-medium text-foreground">
+                  Upload Traffic Data File
+                </label>
+                <div className="flex items-center space-x-2">
+                    <Input
+                    id="traffic-file-upload"
+                    type="file"
+                    onChange={handleFileChange}
+                    accept=".txt,.log,.csv,.json" 
+                    className="w-full cursor-pointer border-input"
+                    data-ai-hint="upload logs"
+                    />
+                    <UploadCloud className="h-5 w-5 text-muted-foreground" />
+                </div>
+                {fileName && <p className="text-xs text-muted-foreground">Selected file: {fileName}</p>}
+                <p className="text-xs text-muted-foreground">
+                  Upload traffic data (e.g., CSV, TXT, or LOG format). The AI expects text-based input. <br/>
+                  For PCAP files, please convert them to a text format (e.g., using tshark or tcpdump) before uploading.
+                </p>
+              </div>
               <Button onClick={handleAnalyzeTraffic} disabled={isAnalyzing || !aiTrafficInput.trim()} className="w-full">
-                {isAnalyzing ? "Analyzing..." : "Analyze with AI"}
+                {isAnalyzing ? "Analyzing..." : "Analyze Uploaded Data"}
               </Button>
               <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError}/>
             </CardContent>
@@ -223,5 +252,3 @@ export default function DashboardPage() {
     </SidebarInset>
   );
 }
-
-    
