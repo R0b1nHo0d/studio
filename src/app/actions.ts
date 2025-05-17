@@ -2,8 +2,6 @@
 'use server';
 import { generateTrafficAnalysisReport } from '@/ai/flows/generate-traffic-analysis-report';
 import type { TrafficAnalysisReportInput, TrafficAnalysisReportOutput } from '@/ai/flows/generate-traffic-analysis-report';
-import { summarizeTrafficAnalysis } from '@/ai/flows/summarize-traffic-analysis';
-import type { SummarizeTrafficAnalysisInput, SummarizeTrafficAnalysisOutput } from '@/ai/flows/summarize-traffic-analysis';
 
 
 export async function analyzeTrafficDataAction(input: TrafficAnalysisReportInput): Promise<TrafficAnalysisReportOutput> {
@@ -17,12 +15,3 @@ export async function analyzeTrafficDataAction(input: TrafficAnalysisReportInput
   }
 }
 
-export async function summarizeTrafficDataAction(input: SummarizeTrafficAnalysisInput): Promise<SummarizeTrafficAnalysisOutput> {
-  try {
-    const summary = await summarizeTrafficAnalysis(input);
-    return summary;
-  } catch (error) {
-    console.error("Error summarizing traffic data:", error);
-    throw new Error("Failed to summarize traffic data via summarizeTrafficAnalysis. Please check server logs.");
-  }
-}
