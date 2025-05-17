@@ -30,9 +30,13 @@ export interface AiAnalysisReport {
   outboundSrcToRemote: string;
   connectionsToWhitelistedDomains: string;
   connectionsToNonWhitelistedDomains: string;
+  httpRequestsSummary?: string;
+  tcpHandshakeAnalysis?: string;
   recommendations: string;
   ipFrequency?: IpFrequencyData[];
   threatCount?: number;
   anomalyCount?: number;
   significantOutboundConnectionsCount?: number;
 }
+
+```
