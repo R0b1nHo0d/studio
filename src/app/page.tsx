@@ -12,7 +12,8 @@ import type { AiAnalysisReport } from "@/types";
 import { analyzeTrafficDataAction } from "./actions";
 import { AnalysisReport } from "@/components/dashboard/AnalysisReport";
 import { IpFrequencyChart } from "@/components/dashboard/IpFrequencyChart";
-import { UploadCloud } from "lucide-react";
+import { StatCard } from "@/components/dashboard/StatCard";
+import { UploadCloud, ShieldAlert, ListTree, ArrowUpRightSquare } from "lucide-react";
 import { SidebarInset } from "@/components/ui/sidebar";
 
 export default function DashboardPage() {
@@ -68,6 +69,12 @@ export default function DashboardPage() {
       setIsAnalyzing(false);
     }
   };
+
+  const hasSummaryStats = aiAnalysisResult && (
+    typeof aiAnalysisResult.threatCount === 'number' ||
+    typeof aiAnalysisResult.anomalyCount === 'number' ||
+    typeof aiAnalysisResult.significantOutboundConnectionsCount === 'number'
+  );
 
   return (
     <SidebarInset>
@@ -147,11 +154,38 @@ export default function DashboardPage() {
                 </Button>
               </div>
               
+              {/* Summary Statistics Section */}
+              {!isAnalyzing && hasSummaryStats && aiAnalysisResult && (
+                <div className="grid gap-4 md:grid-cols-3 my-4">
+                  {typeof aiAnalysisResult.threatCount === 'number' && (
+                    <StatCard
+                      title="Potential Threats"
+                      value={aiAnalysisResult.threatCount}
+                      icon={<ShieldAlert className="h-5 w-5 text-destructive" />}
+                    />
+                  )}
+                  {typeof aiAnalysisResult.anomalyCount === 'number' && (
+                    <StatCard
+                      title="Anomalies Detected"
+                      value={aiAnalysisResult.anomalyCount}
+                      icon={<ListTree className="h-5 w-5 text-accent" />}
+                    />
+                  )}
+                  {typeof aiAnalysisResult.significantOutboundConnectionsCount === 'number' && (
+                    <StatCard
+                      title="Sig. Outbound Conns."
+                      value={aiAnalysisResult.significantOutboundConnectionsCount}
+                      icon={<ArrowUpRightSquare className="h-5 w-5 text-blue-500" />}
+                      description="Count of notable connections"
+                    />
+                  )}
+                </div>
+              )}
+
               <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError} />
             </CardContent>
           </Card>
 
-          {/* New Chart Section */}
           {(aiAnalysisResult || isAnalyzing) && (
               <div>
                   <IpFrequencyChart data={aiAnalysisResult?.ipFrequency} isLoading={isAnalyzing} />

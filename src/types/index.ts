@@ -31,6 +31,9 @@ export interface AiAnalysisReport {
   connectionsToWhitelistedDomains: string;
   connectionsToNonWhitelistedDomains: string;
   recommendations: string;
-  ipFrequency?: IpFrequencyData[]; // New field for IP frequency
+  ipFrequency?: IpFrequencyData[];
+  threatCount?: number;
+  anomalyCount?: number;
+  significantOutboundConnectionsCount?: number;
 }
 

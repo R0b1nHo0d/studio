@@ -51,6 +51,9 @@ const TrafficAnalysisReportOutputSchema = z.object({
     }))
     .optional()
     .describe('A list of top 5-10 destination IP addresses and their frequency counts. Only include if data allows for meaningful frequency analysis. Example: [{"ip": "8.8.8.8", "count": 42}]'),
+  threatCount: z.number().optional().describe('The total number of distinct potential security threats identified. Provide 0 if none.'),
+  anomalyCount: z.number().optional().describe('The total number of distinct anomalies or unusual patterns identified. Provide 0 if none.'),
+  significantOutboundConnectionsCount: z.number().optional().describe('A count of significant or notable outbound connections summarized. Provide 0 if none or not applicable.'),
 });
 export type TrafficAnalysisReportOutput = z.infer<typeof TrafficAnalysisReportOutputSchema>;
 
@@ -90,7 +93,11 @@ Report Requirements:
 5. Connections to Whitelisted Domains: If whitelisted domains were provided, summarize connections to these domains. Attempt to identify the application or service making the connection if possible.
 6. Connections to Non-Whitelisted Domains: Summarize connections to domains NOT on the whitelist (or all connections if no whitelist provided). Highlight any that seem unusual, suspicious, or connect to unexpected remote destinations. Attempt to identify the application or service making the connection if possible.
 7. Recommendations: Provide actionable recommendations to improve network security based on the analysis.
-8. IP Address Frequency: Identify the top 5-10 most frequent *destination* IP addresses observed in the outbound traffic. For each, provide the IP address and its count of occurrences. Format this as an array of objects, where each object has an "ip" (string) and "count" (number) property. If the traffic data is insufficient or too sparse to determine meaningful frequency, you may return an empty array for ipFrequency or omit the field. Example: [{"ip": "8.8.8.8", "count": 42}, {"ip": "1.1.1.1", "count": 20}]`,
+8. IP Address Frequency: Identify the top 5-10 most frequent *destination* IP addresses observed in the outbound traffic. For each, provide the IP address and its count of occurrences. Format this as an array of objects, where each object has an "ip" (string) and "count" (number) property. If the traffic data is insufficient or too sparse to determine meaningful frequency, you may return an empty array for ipFrequency or omit the field. Example: [{"ip": "8.8.8.8", "count": 42}, {"ip": "1.1.1.1", "count": 20}]
+9. Summary Counts:
+    - threatCount: Provide the total number of distinct potential security threats you identified. If none, return 0.
+    - anomalyCount: Provide the total number of distinct anomalies or unusual patterns you identified. If none, return 0.
+    - significantOutboundConnectionsCount: Provide a count of the significant or notable outbound connections you summarized in the "Outbound Traffic (Source to Remote)" section. If none or not applicable, return 0.`,
 });
 
 const generateTrafficAnalysisReportFlow = ai.defineFlow(
