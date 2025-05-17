@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { AiAnalysisReport } from "@/types";
 import { analyzeTrafficDataAction } from "./actions";
 import { AnalysisReport } from "@/components/dashboard/AnalysisReport";
-import { IpFrequencyChart } from "@/components/dashboard/IpFrequencyChart"; // New import
+import { IpFrequencyChart } from "@/components/dashboard/IpFrequencyChart";
 import { UploadCloud } from "lucide-react";
 import { SidebarInset } from "@/components/ui/sidebar";
 
@@ -71,68 +71,93 @@ export default function DashboardPage() {
 
   return (
     <SidebarInset>
-      <main className="flex flex-1 flex-col">
-        <Card className="flex flex-1 flex-col shadow-lg">
-          <CardHeader>
-            <CardTitle>AI-Powered Analysis</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-grow space-y-6 p-6">
-            <div className="non-printable space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="traffic-file-upload" className="block text-sm font-medium text-foreground">
-                  Upload Traffic Data File
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="traffic-file-upload"
-                    type="file"
-                    onChange={handleFileChange}
-                    accept=".txt,.log,.csv,.json" 
-                    className="w-full cursor-pointer border-input"
-                    data-ai-hint="upload logs"
+      <main className="flex flex-1 flex-col md:flex-row gap-6 p-4 md:p-6">
+        {/* Left Column - Description Box */}
+        <div className="w-full md:w-1/3 lg:w-1/4">
+          <Card className="shadow-lg h-full">
+            <CardHeader>
+              <CardTitle>About OUTbound Analyzer</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                OUTbound Analyzer is a tool designed to help you understand and secure your network traffic.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Upload your captured network logs (e.g., from tools like Wireshark or tcpdump, converted to text format) 
+                to leverage AI-powered analysis. 
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Identify patterns, anomalies, potential security threats, 
+                and see how your applications are communicating with whitelisted and non-whitelisted domains.
+                The visual IP frequency chart also helps pinpoint the most common destinations in your traffic.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Existing Content */}
+        <div className="flex-1 flex flex-col gap-6">
+          <Card className="flex-1 flex flex-col shadow-lg"> {/* Removed m-2 as padding is on main */}
+            <CardHeader>
+              <CardTitle>AI-Powered Analysis</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-grow space-y-6 p-6">
+              <div className="non-printable space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="traffic-file-upload" className="block text-sm font-medium text-foreground">
+                    Upload Traffic Data File
+                  </Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      id="traffic-file-upload"
+                      type="file"
+                      onChange={handleFileChange}
+                      accept=".txt,.log,.csv,.json" 
+                      className="w-full cursor-pointer border-input"
+                      data-ai-hint="upload logs"
+                    />
+                    <UploadCloud className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  {fileName && <p className="text-xs text-muted-foreground">Selected file: {fileName}</p>}
+                  <p className="text-xs text-muted-foreground">
+                    Upload traffic data (e.g., CSV, TXT, JSON, or LOG format). The AI expects text-based input. <br />
+                    For PCAP files, please convert them to a text format (e.g., using tshark or tcpdump) before uploading.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="whitelisted-domains-input" className="block text-sm font-medium text-foreground">
+                    Whitelisted Domains (Optional)
+                  </Label>
+                  <Textarea
+                    id="whitelisted-domains-input"
+                    placeholder="Enter comma-separated domains, e.g., google.com, mycompany.com, api.service.com"
+                    value={whitelistedDomainsInput}
+                    onChange={(e) => setWhitelistedDomainsInput(e.target.value)}
+                    className="min-h-[60px]"
+                    data-ai-hint="whitelist domains"
                   />
-                  <UploadCloud className="h-5 w-5 text-muted-foreground" />
+                  <p className="text-xs text-muted-foreground">
+                    Provide a list of domains you trust. The AI will categorize connections based on this list.
+                  </p>
                 </div>
-                {fileName && <p className="text-xs text-muted-foreground">Selected file: {fileName}</p>}
-                <p className="text-xs text-muted-foreground">
-                  Upload traffic data (e.g., CSV, TXT, JSON, or LOG format). The AI expects text-based input. <br />
-                  For PCAP files, please convert them to a text format (e.g., using tshark or tcpdump) before uploading.
-                </p>
+
+                <Button onClick={handleAnalyzeTraffic} disabled={isAnalyzing || !aiTrafficInput.trim()} className="w-full">
+                  {isAnalyzing ? "Analyzing..." : "Analyze Uploaded Data"}
+                </Button>
               </div>
+              
+              <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError} />
+            </CardContent>
+          </Card>
 
-              <div className="space-y-2">
-                <Label htmlFor="whitelisted-domains-input" className="block text-sm font-medium text-foreground">
-                  Whitelisted Domains (Optional)
-                </Label>
-                <Textarea
-                  id="whitelisted-domains-input"
-                  placeholder="Enter comma-separated domains, e.g., google.com, mycompany.com, api.service.com"
-                  value={whitelistedDomainsInput}
-                  onChange={(e) => setWhitelistedDomainsInput(e.target.value)}
-                  className="min-h-[60px]"
-                  data-ai-hint="whitelist domains"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Provide a list of domains you trust. The AI will categorize connections based on this list.
-                </p>
+          {/* New Chart Section */}
+          {(aiAnalysisResult || isAnalyzing) && (
+              <div>
+                  <IpFrequencyChart data={aiAnalysisResult?.ipFrequency} isLoading={isAnalyzing} />
               </div>
-
-              <Button onClick={handleAnalyzeTraffic} disabled={isAnalyzing || !aiTrafficInput.trim()} className="w-full">
-                {isAnalyzing ? "Analyzing..." : "Analyze Uploaded Data"}
-              </Button>
-            </div>
-            
-            <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError} />
-
-            {/* New Chart Section */}
-            {(aiAnalysisResult || isAnalyzing) && (
-                <div className="mt-6">
-                    <IpFrequencyChart data={aiAnalysisResult?.ipFrequency} isLoading={isAnalyzing} />
-                </div>
-            )}
-
-          </CardContent>
-        </Card>
+          )}
+        </div>
       </main>
     </SidebarInset>
   );
