@@ -12,6 +12,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import type { IpFrequencyData } from '@/types'; // Import the new type
 
 const TrafficAnalysisReportInputSchema = z.object({
   trafficData: z
@@ -44,6 +45,12 @@ const TrafficAnalysisReportOutputSchema = z.object({
   recommendations: z
     .string()
     .describe('Recommendations for improving network security based on the analysis.'),
+  ipFrequency: z.array(z.object({
+      ip: z.string().describe('The IP address.'),
+      count: z.number().describe('The frequency count of this IP address.'),
+    }))
+    .optional()
+    .describe('A list of top 5-10 destination IP addresses and their frequency counts. Only include if data allows for meaningful frequency analysis. Example: [{"ip": "8.8.8.8", "count": 42}]'),
 });
 export type TrafficAnalysisReportOutput = z.infer<typeof TrafficAnalysisReportOutputSchema>;
 
@@ -82,7 +89,8 @@ Report Requirements:
 4. Outbound Traffic (Source to Remote): Detail significant outbound connections observed from local sources to remote destinations. For each connection, mention the source IP, destination IP, protocol, and any common service ports if identifiable.
 5. Connections to Whitelisted Domains: If whitelisted domains were provided, summarize connections to these domains. Attempt to identify the application or service making the connection if possible.
 6. Connections to Non-Whitelisted Domains: Summarize connections to domains NOT on the whitelist (or all connections if no whitelist provided). Highlight any that seem unusual, suspicious, or connect to unexpected remote destinations. Attempt to identify the application or service making the connection if possible.
-7. Recommendations: Provide actionable recommendations to improve network security based on the analysis.`,
+7. Recommendations: Provide actionable recommendations to improve network security based on the analysis.
+8. IP Address Frequency: Identify the top 5-10 most frequent *destination* IP addresses observed in the outbound traffic. For each, provide the IP address and its count of occurrences. Format this as an array of objects, where each object has an "ip" (string) and "count" (number) property. If the traffic data is insufficient or too sparse to determine meaningful frequency, you may return an empty array for ipFrequency or omit the field. Example: [{"ip": "8.8.8.8", "count": 42}, {"ip": "1.1.1.1", "count": 20}]`,
 });
 
 const generateTrafficAnalysisReportFlow = ai.defineFlow(

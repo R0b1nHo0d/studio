@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { AiAnalysisReport } from "@/types";
 import { analyzeTrafficDataAction } from "./actions";
 import { AnalysisReport } from "@/components/dashboard/AnalysisReport";
+import { IpFrequencyChart } from "@/components/dashboard/IpFrequencyChart"; // New import
 import { UploadCloud } from "lucide-react";
 import { SidebarInset } from "@/components/ui/sidebar";
 
@@ -76,7 +77,7 @@ export default function DashboardPage() {
             <CardTitle>AI-Powered Analysis</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow space-y-6 p-6">
-            <div className="non-printable space-y-6"> {/* Added non-printable class here */}
+            <div className="non-printable space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="traffic-file-upload" className="block text-sm font-medium text-foreground">
                   Upload Traffic Data File
@@ -122,6 +123,14 @@ export default function DashboardPage() {
             </div>
             
             <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError} />
+
+            {/* New Chart Section */}
+            {(aiAnalysisResult || isAnalyzing) && (
+                <div className="mt-6">
+                    <IpFrequencyChart data={aiAnalysisResult?.ipFrequency} isLoading={isAnalyzing} />
+                </div>
+            )}
+
           </CardContent>
         </Card>
       </main>

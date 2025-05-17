@@ -18,6 +18,11 @@ export interface FilterRule {
   isEnabled: boolean;
 }
 
+export interface IpFrequencyData {
+  ip: string;
+  count: number;
+}
+
 export interface AiAnalysisReport {
   summary: string;
   potentialThreats: string;
@@ -26,4 +31,6 @@ export interface AiAnalysisReport {
   connectionsToWhitelistedDomains: string;
   connectionsToNonWhitelistedDomains: string;
   recommendations: string;
+  ipFrequency?: IpFrequencyData[]; // New field for IP frequency
 }
+
