@@ -36,4 +36,3 @@ export interface AiAnalysisReport {
   anomalyCount?: number;
   significantOutboundConnectionsCount?: number;
 }
-
