@@ -6,6 +6,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Header } from '@/components/layout/Header';
 import { SidebarNav } from '@/components/layout/SidebarNav';
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from '@/components/theme/theme-provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,11 +31,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}>
-        <SidebarProvider defaultOpen={true}>
-          <Header />
-          <SidebarNav />
-          {children}
-        </SidebarProvider>
+        <ThemeProvider>
+          <SidebarProvider defaultOpen={true}>
+            <Header />
+            <SidebarNav />
+            {children}
+          </SidebarProvider>
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>
