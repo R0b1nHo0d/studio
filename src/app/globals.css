@@ -93,3 +93,93 @@ body {
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: white !important; /* Ensure white background */
+  }
+
+  /* Hide common layout elements and elements marked as non-printable */
+  header, /* App header */
+  [data-sidebar="sidebar"], /* Main sidebar component */
+  [data-sidebar="trigger"], /* Mobile sidebar trigger */
+  .non-printable /* Utility class for elements to hide */ {
+    display: none !important;
+  }
+
+  /* Ensure the main content area (SidebarInset) and the main page card are reset for print */
+  main.flex.flex-1.flex-col { /* Targets SidebarInset <main> */
+    display: block !important; 
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    background-color: white !important;
+  }
+  
+  main.flex.flex-1.flex-col > .shadow-lg { /* Targets the main Card in page.tsx */
+    display: block !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important; 
+    background-color: white !important;
+  }
+  
+  main.flex.flex-1.flex-col > .shadow-lg > div[class*="CardContent"] { /* CardContent in page.tsx */
+    padding: 0 !important; 
+    background-color: white !important;
+  }
+
+  /* Style the actual report card for printing */
+  #ai-analysis-report-card { /* The div wrapping the report Card in AnalysisReport.tsx */
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important; /* Padding for the printed page content */
+    box-shadow: none !important;
+    border: none !important;
+    font-size: 10pt; /* Adjusted font size for print */
+    background-color: white !important;
+  }
+  
+  /* Ensure all text within the report card is black and backgrounds are transparent */
+  #ai-analysis-report-card,
+  #ai-analysis-report-card *,
+  #ai-analysis-report-card *::before, /* For pseudo-elements if any */
+  #ai-analysis-report-card *::after {
+     color: #000000 !important;
+     background-color: transparent !important;
+     border-color: #000000 !important; /* Ensure borders are black */
+  }
+
+  #ai-analysis-report-card .text-muted-foreground {
+     color: #333333 !important; /* Slightly lighter black for muted text */
+  }
+  #ai-analysis-report-card .font-mono {
+    font-family: 'Courier New', Courier, monospace !important;
+  }
+  #ai-analysis-report-card svg { /* Make icons black by ensuring stroke is black */
+    stroke: #000000 !important;
+    fill: #000000 !important; /* For icons that use fill */
+  }
+  /* Override specific text colors from the theme for printing */
+  #ai-analysis-report-card [class*="text-primary"],
+  #ai-analysis-report-card [class*="text-destructive"],
+  #ai-analysis-report-card [class*="text-accent"],
+  #ai-analysis-report-card [class*="text-green-"],
+  #ai-analysis-report-card [class*="text-blue-"],
+  #ai-analysis-report-card [class*="text-orange-"] {
+    color: #000000 !important;
+  }
+
+
+  /* Ensure report sections don't break awkwardly */
+  .report-section {
+    page-break-inside: avoid;
+    margin-top: 1em; /* Add some space before each section */
+  }
+  .report-section:first-child {
+    margin-top: 0;
+  }
+}

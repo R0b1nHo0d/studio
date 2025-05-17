@@ -1,8 +1,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, CheckCircle, Info, ListChecks, ArrowUpRight, ShieldCheck, ShieldAlert } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, ListChecks, ArrowUpRight, ShieldCheck, ShieldAlert, Printer } from "lucide-react";
 import type { AiAnalysisReport } from "@/types";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface AnalysisReportProps {
   report: AiAnalysisReport | null;
@@ -65,13 +66,19 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" id="ai-analysis-report-card"> {/* ID for print styling */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div className="flex items-center">
             <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
-            Traffic Analysis Report
-          </CardTitle>
+            <CardTitle>Traffic Analysis Report</CardTitle>
+          </div>
+          <div className="non-printable"> {/* Container for the print button */}
+            <Button variant="outline" size="sm" onClick={() => window.print()}>
+              <Printer className="mr-2 h-4 w-4" />
+              Print PDF
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <ReportSection title="Summary" icon={<Info className="h-5 w-5 text-primary" />}>
@@ -113,7 +120,7 @@ interface ReportSectionProps {
 
 function ReportSection({ title, icon, children }: ReportSectionProps) {
   return (
-    <div>
+    <div className="report-section"> {/* Added report-section class for print styling */}
       <h3 className="text-lg font-semibold mb-2 flex items-center">
         {icon}
         <span className="ml-2">{title}</span>
@@ -122,4 +129,3 @@ function ReportSection({ title, icon, children }: ReportSectionProps) {
     </div>
   );
 }
-
