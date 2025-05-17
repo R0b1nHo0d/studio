@@ -181,16 +181,19 @@ export default function DashboardPage() {
                   )}
                 </div>
               )}
+              
+              {/* Wrapper for printable content */}
+              <div id="ai-analysis-report-card" className="space-y-6">
+                <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError} />
+                
+                {/* IP Frequency Chart - now part of the printable area if visible */}
+                {(aiAnalysisResult || isAnalyzing) && !analysisError && (
+                    <IpFrequencyChart data={aiAnalysisResult?.ipFrequency} isLoading={isAnalyzing} />
+                )}
+              </div>
 
-              <AnalysisReport report={aiAnalysisResult} isLoading={isAnalyzing} error={analysisError} />
             </CardContent>
           </Card>
-
-          {(aiAnalysisResult || isAnalyzing) && (
-              <div>
-                  <IpFrequencyChart data={aiAnalysisResult?.ipFrequency} isLoading={isAnalyzing} />
-              </div>
-          )}
         </div>
       </div>
     </SidebarInset>

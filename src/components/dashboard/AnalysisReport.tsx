@@ -63,18 +63,19 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
     "OUTbound Traffic (Source to Remote)",
     "Connections to Whitelisted Domains",
     "Connections to Non-Whitelisted/Unknown Domains",
-    "HTTP & DNS Analysis", // Updated name
+    "HTTP & DNS Analysis", 
   ];
 
   return (
-    <div className="space-y-4" id="ai-analysis-report-card"> {/* ID for print styling */}
+    // Removed id="ai-analysis-report-card" from here
+    <div className="space-y-4"> 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="flex items-center">
             <CheckCircle className="mr-2 h-5 w-5 text-green-500" />
             <CardTitle>Traffic Analysis Report</CardTitle>
           </div>
-          <div className="non-printable"> {/* Container for the print button */}
+          <div className="non-printable"> 
             <Button variant="outline" size="sm" onClick={() => window.print()}>
               <Printer className="mr-2 h-4 w-4" />
               Print PDF
@@ -104,7 +105,7 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
               <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("Connections to Non-Whitelisted/Unknown Domains") && "font-mono")}>{report.connectionsToNonWhitelistedDomains}</p>
             </ReportSection>
           )}
-           {report.httpAndDnsAnalysis && ( // Updated field name
+           {report.httpAndDnsAnalysis && ( 
             <ReportSection title="HTTP & DNS Analysis" icon={<Globe2 className="h-5 w-5 text-sky-500" />}>
               <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("HTTP & DNS Analysis") && "font-mono")}>{report.httpAndDnsAnalysis}</p>
             </ReportSection>
@@ -126,7 +127,7 @@ interface ReportSectionProps {
 
 function ReportSection({ title, icon, children }: ReportSectionProps) {
   return (
-    <div className="report-section"> {/* Added report-section class for print styling */}
+    <div className="report-section"> 
       <h3 className="text-lg font-semibold mb-2 flex items-center">
         {icon}
         <span className="ml-2">{title}</span>
