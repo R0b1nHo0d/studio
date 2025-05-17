@@ -71,7 +71,7 @@ export default function DashboardPage() {
 
   return (
     <SidebarInset>
-      <main className="flex flex-1 flex-col md:flex-row gap-6 p-4 md:p-6">
+      <div className="flex flex-1 flex-col md:flex-row gap-6 px-4 py-6 sm:px-6">
         {/* Left Column - Description Box */}
         <div className="w-full md:w-1/3 lg:w-1/4">
           <Card className="shadow-lg h-full">
@@ -97,7 +97,7 @@ export default function DashboardPage() {
 
         {/* Right Column - Existing Content */}
         <div className="flex-1 flex flex-col gap-6">
-          <Card className="flex-1 flex flex-col shadow-lg"> {/* Removed m-2 as padding is on main */}
+          <Card className="flex-1 flex flex-col shadow-lg">
             <CardHeader>
               <CardTitle>AI-Powered Analysis</CardTitle>
             </CardHeader>
@@ -158,7 +158,7 @@ export default function DashboardPage() {
               </div>
           )}
         </div>
-      </main>
+      </div>
     </SidebarInset>
   );
 }
