@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, CheckCircle, Info, ListChecks, ArrowUpRight, ShieldCheck, ShieldAlert, Printer, Globe2, GitCompareArrows } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, ListChecks, ArrowUpRight, ShieldCheck, ShieldAlert, Printer, Globe2 } from "lucide-react";
 import type { AiAnalysisReport } from "@/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -63,8 +63,7 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
     "OUTbound Traffic (Source to Remote)",
     "Connections to Whitelisted Domains",
     "Connections to Non-Whitelisted/Unknown Domains",
-    "HTTP Request Summary",
-    "TCP Handshake Analysis"
+    "HTTP & DNS Analysis", // Updated name
   ];
 
   return (
@@ -105,14 +104,9 @@ export function AnalysisReport({ report, isLoading, error }: AnalysisReportProps
               <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("Connections to Non-Whitelisted/Unknown Domains") && "font-mono")}>{report.connectionsToNonWhitelistedDomains}</p>
             </ReportSection>
           )}
-           {report.httpRequestsSummary && (
-            <ReportSection title="HTTP Request Summary" icon={<Globe2 className="h-5 w-5 text-sky-500" />}>
-              <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("HTTP Request Summary") && "font-mono")}>{report.httpRequestsSummary}</p>
-            </ReportSection>
-          )}
-          {report.tcpHandshakeAnalysis && (
-            <ReportSection title="TCP Handshake Analysis" icon={<GitCompareArrows className="h-5 w-5 text-purple-500" />}>
-              <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("TCP Handshake Analysis") && "font-mono")}>{report.tcpHandshakeAnalysis}</p>
+           {report.httpAndDnsAnalysis && ( // Updated field name
+            <ReportSection title="HTTP & DNS Analysis" icon={<Globe2 className="h-5 w-5 text-sky-500" />}>
+              <p className={cn("text-sm whitespace-pre-wrap", monospaceSections.includes("HTTP & DNS Analysis") && "font-mono")}>{report.httpAndDnsAnalysis}</p>
             </ReportSection>
           )}
           <ReportSection title="Recommendations" icon={<ListChecks className="h-5 w-5 text-green-600" />}>
